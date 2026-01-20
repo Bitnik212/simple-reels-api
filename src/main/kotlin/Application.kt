@@ -1,8 +1,12 @@
 package moe.bitt
 
 import io.ktor.server.application.*
+import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import org.koin.dsl.module
+import org.koin.ktor.plugin.Koin
+import org.koin.logger.slf4jLogger
 
 
 fun main() {
@@ -10,10 +14,22 @@ fun main() {
 }
 
 fun Application.module() {
+    val config = ApplicationConfig("application.yaml")
+
+    val initModule = module {
+        single<ApplicationConfig> {
+            config
+        }
+        single<ApplicationEnvironment> {
+            environment
+        }
+    }
+
+    install(Koin) {
+        slf4jLogger()
+        modules(mainModule, initModule)
+    }
     configureHTTP()
     configureMonitoring()
-    configureSerialization()
-//    configureDatabases()
-    configureFrameworks()
     configureRouting()
 }
