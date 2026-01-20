@@ -7,6 +7,14 @@
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
-    <logger name="org.eclipse.jetty" level="INFO"/>
-    <logger name="io.netty" level="INFO"/>
+    <logger name="org.eclipse.jetty" level="${KTOR_LOG_LEVEL:-DEBUG}"/>
+    <logger name="io.netty" level="${KTOR_LOG_LEVEL:-DEBUG}"/>
+    <logger name="Application" level="${KTOR_LOG_LEVEL:-DEBUG}"/>
+    <logger name="io.ktor" level="${KTOR_LOG_LEVEL:-DEBUG}"/>
+    <logger name="org.flywaydb" level="${KTOR_LOG_LEVEL:-DEBUG}"/>
+    <logger name="Exposed" level="${KTOR_LOG_LEVEL:-DEBUG}"/>
+    <logger name="OkHttpEngine" level="${KTOR_LOG_LEVEL:-DEBUG}"/>
+    <logger name="aws.smithy" level="${KTOR_LOG_LEVEL:-DEBUG}"/>
+    <logger name="com.zaxxer.hikari" level="${KTOR_LOG_LEVEL:-DEBUG}"/>
+    <logger name="a.s.k.r.h.engine.okhttp.OkHttpEngine" level="${KTOR_LOG_LEVEL:-DEBUG}"/>
 </configuration>
