@@ -35,6 +35,17 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.ktor.server.config.yaml)
     implementation("io.bitnik212:reels-downloader:0.1.0")
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.client.logging)
+
+    implementation("software.amazon.awssdk:s3:2.25.50")
+    implementation("software.amazon.awssdk:netty-nio-client:2.25.50")
+
+    // чтобы использовать SdkPublisher удобнее
+    implementation("io.projectreactor:reactor-core:3.6.3")
+
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
 }
