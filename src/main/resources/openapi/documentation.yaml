@@ -1,23 +1,72 @@
 openapi: "3.0.3"
 info:
-  title: "Application API"
-  description: "Application API"
+  title: "Simple Reels API"
+  description: "API for fetching Instagram Reels information and downloading them."
   version: "1.0.0"
-servers:
-  - url: "http://0.0.0.0:8080"
 paths:
-  /:
+  /reels/{reel_id}:
     get:
-      description: "Hello World!"
+      summary: "Get Reel Info"
+      description: "Returns information about a specific Instagram Reel."
+      parameters:
+        - name: "reel_id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
       responses:
         "200":
-          description: "OK"
+          description: "Successful response"
           content:
-            text/plain:
+            application/json:
               schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Hello World!"
+                $ref: "#/components/schemas/ShortCodeMedia"
+        "400":
+          description: "Invalid reel_id or other error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: "Download Reel"
+      description: "Downloads an Instagram Reel and either redirects to the S3 URL or returns it in JSON."
+      parameters:
+        - name: "reel_id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "redirect"
+          in: "query"
+          required: false
+          schema:
+            type: "boolean"
+            default: true
+      responses:
+        "200":
+          description: "Successful response with URL (when redirect=false)"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  url:
+                    type: "string"
+        "302":
+          description: "Redirect to the S3 URL (when redirect=true)"
+        "400":
+          description: "Invalid reel_id or Reel not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
-  schemas: { }
+  schemas:
+    ShortCodeMedia:
+      type: "object"
+      description: "Information about the reel media"
+    Error:
+      type: "object"
+      properties:
+        message:
+          type: "string"
