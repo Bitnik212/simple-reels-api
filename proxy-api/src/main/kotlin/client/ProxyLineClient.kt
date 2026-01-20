@@ -17,6 +17,7 @@ import net.proxyline.model.ProxiesResponse
 
 class ProxyLineClient(
     private val apiKey: String,
+    private val hostname: String = "panel.proxyline.net",
     private val logLevel: LogLevel = LogLevel.NONE
 ) {
 
@@ -42,7 +43,7 @@ class ProxyLineClient(
         limit: Int = 10,
         offset: Int = 0
     ): ProxiesResponse {
-        val response = client.get("https://panel.proxyline.net/api/proxies/") {
+        val response = client.get("https://$hostname/api/proxies/") {
             parameter("api_key", apiKey)
             type?.let {
                 parameter("type", type.alias)

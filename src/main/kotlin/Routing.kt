@@ -16,20 +16,26 @@ fun Application.configureRouting() {
 
     val config by inject<ApplicationConfig>()
 
-    val rotatingProxies = let {
+    val rotatingProxies = config.propertyOrNull("proxyline.api-key")?.getString()?.takeIf { it.isNotBlank() }?.let { apiKey ->
         val rotatingProxies = mutableMapOf<Proxy, String>()
         val proxyLineService = ProxyLineService(
             ProxyLineClient(
-                apiKey = config.property("proxyline.api-key").getString()
+                apiKey = apiKey,
+                hostname = config.property("proxyline.hostname").getString()
             )
         )
         runBlocking {
-            proxyLineService.httpProxiesUrlByTag(config.property("proxyline.tag").getString()).forEach {
-                rotatingProxies[it.toHttpProxy()] = it.authority
+            try {
+                proxyLineService.httpProxiesUrlByTag(config.property("proxyline.tag").getString()).forEach {
+                    rotatingProxies[it.toHttpProxy()] = it.authority
+                }
+                rotatingProxies.toMap()
+            } catch (e: Exception) {
+                println("ProxyLine API error: ${e.message}")
+                null
             }
         }
-        rotatingProxies.toMap()
-    }
+    } ?: emptyMap()
 
     val service = ReelService(
         rotatingProxies = rotatingProxies
