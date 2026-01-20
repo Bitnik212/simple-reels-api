@@ -1,14 +1,39 @@
 package moe.bitt
 
 import io.ktor.server.application.*
+import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.*
+import kotlinx.coroutines.runBlocking
 import moe.bitt.reels.api.ReelService
+import net.proxyline.client.ProxyLineClient
+import net.proxyline.service.ProxyLineService
+import org.koin.ktor.ext.inject
+import java.net.Proxy
 
 
 fun Application.configureRouting() {
 
-    val service = ReelService()
+    val config by inject<ApplicationConfig>()
+
+    val rotatingProxies = let {
+        val rotatingProxies = mutableMapOf<Proxy, String>()
+        val proxyLineService = ProxyLineService(
+            ProxyLineClient(
+                apiKey = config.property("proxyline.api-key").getString()
+            )
+        )
+        runBlocking {
+            proxyLineService.httpProxiesUrlByTag(config.property("proxyline.tag").getString()).forEach {
+                rotatingProxies[it.toHttpProxy()] = it.authority
+            }
+        }
+        rotatingProxies.toMap()
+    }
+
+    val service = ReelService(
+        rotatingProxies = rotatingProxies
+    )
 
     routing {
         get("/reels/{reel_id}") {

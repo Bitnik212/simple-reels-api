@@ -18,6 +18,7 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":proxy-api"))
     implementation("io.ktor:ktor-server-default-headers")
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.core)
