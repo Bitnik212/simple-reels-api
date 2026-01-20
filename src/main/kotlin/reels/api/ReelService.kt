@@ -8,20 +8,14 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
-import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsChannel
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.util.toMap
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import moe.bitt.getKtorLogLevel
 import okhttp3.Authenticator
 import okhttp3.Credentials
 import okhttp3.Request
@@ -60,7 +54,7 @@ class ReelService(
             }
 
             install(Logging) {
-                level = LogLevel.HEADERS
+                level = getKtorLogLevel()
             }
 
             engine {
