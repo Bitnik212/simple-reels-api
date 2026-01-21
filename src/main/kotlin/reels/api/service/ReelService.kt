@@ -1,11 +1,10 @@
-package moe.bitt.reels.api
+package moe.bitt.reels.api.service
 
 import io.bitnik212.instagram.reels.api.MediaData
 import io.bitnik212.instagram.reels.api.MediaInfoClient
 import io.bitnik212.instagram.reels.api.utils.InstagramApiParamsService
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.Logging
@@ -16,17 +15,15 @@ import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import moe.bitt.getKtorLogLevel
+import org.koin.java.KoinJavaComponent.inject
+import moe.bitt.reels.api.S3Client
 import okhttp3.Authenticator
 import okhttp3.Credentials
 import okhttp3.Request
 import okhttp3.Response
-import org.koin.java.KoinJavaComponent.inject
 import java.io.Closeable
 import java.net.Proxy
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.time.Duration.Companion.seconds
 
 
 class ReelService(
@@ -45,12 +42,6 @@ class ReelService(
                         prettyPrint = true
                     }
                 )
-            }
-
-            install(HttpTimeout) {
-                requestTimeoutMillis = 60.seconds.inWholeMilliseconds
-                connectTimeoutMillis = 20.seconds.inWholeMilliseconds
-                socketTimeoutMillis  = 60.seconds.inWholeMilliseconds
             }
 
             install(Logging) {
@@ -140,7 +131,7 @@ class ReelService(
             val contentType = response.headers["Content-Type"] ?: ""
             if (contentType.startsWith("text/html")) return@let null
             when(response.status) {
-                HttpStatusCode.OK -> {
+                HttpStatusCode.Companion.OK -> {
                     val contentLength = response.headers["Content-Length"]
                     val output = response.bodyAsChannel()
 
@@ -155,7 +146,7 @@ class ReelService(
                     null
                 }
             }
-        } ?: null
+        }
     }
 
     override fun close() {

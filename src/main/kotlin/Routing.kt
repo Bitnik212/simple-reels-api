@@ -5,7 +5,7 @@ import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
-import moe.bitt.reels.api.ReelService
+import moe.bitt.reels.api.service.ReelService
 import net.proxyline.client.ProxyLineClient
 import net.proxyline.service.ProxyLineService
 import org.koin.ktor.ext.inject
