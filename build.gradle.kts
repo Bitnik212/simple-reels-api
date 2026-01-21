@@ -35,9 +35,8 @@ dependencies {
     implementation(libs.exposed.jdbc)
     implementation(libs.flyway.core)
     implementation(libs.flyway.database.postgresql)
-    implementation(libs.h2)
-    implementation(libs.hikaricp)
     implementation(libs.postgresql)
+    implementation(libs.hikaricp)
 
     implementation(libs.sentry)
     implementation(libs.sentry.okhttp)
@@ -68,4 +67,12 @@ dependencies {
 
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+tasks.withType<JavaCompile> {
+    options.release.set(17)
 }
