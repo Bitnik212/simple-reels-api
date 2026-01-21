@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "moe.bitt.reels.api"
-version = "0.1.0"
+version = "0.1.1"
 
 application {
     mainClass = "moe.bitt.ApplicationKt"
