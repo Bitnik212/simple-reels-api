@@ -4,6 +4,8 @@ import io.ktor.server.application.*
 import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import moe.bitt.plugin.configureDatabases
+import moe.bitt.plugin.flyway.configureFlyway
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
@@ -29,6 +31,8 @@ fun Application.module() {
         slf4jLogger()
         modules(mainModule, initModule)
     }
+    configureFlyway(config)
+    configureDatabases(config)
     configureHTTP()
     configureMonitoring()
     configureRouting()

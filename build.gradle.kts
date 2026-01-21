@@ -29,8 +29,23 @@ dependencies {
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.exposed.core)
+    implementation(libs.exposed.json)
     implementation(libs.exposed.jdbc)
+    implementation(libs.flyway.core)
+    implementation(libs.flyway.database.postgresql)
+    implementation(libs.h2)
+    implementation(libs.hikaricp)
     implementation(libs.postgresql)
+
+    implementation(libs.sentry)
+    implementation(libs.sentry.okhttp)
+    configurations.configureEach {
+        exclude(group = "io.sentry", module = "sentry-android-okhttp")
+    }
+
+    implementation(libs.ktor.server.metrics.micrometer)
+    implementation(libs.micrometer.registry.prometheus)
+
     implementation(libs.koin.ktor)
     implementation(libs.koin.logger.slf4j)
     implementation(libs.logback.classic)

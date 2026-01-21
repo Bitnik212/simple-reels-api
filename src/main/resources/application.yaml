@@ -5,6 +5,11 @@ ktor:
   deployment:
     port: 8080
 
+database:
+  user: $DB_USER
+  password: $DB_PASSWORD
+  url: $DB_URL
+
 s3:
   bucket: ${S3_BUCKET}
   endpointUrl: ${S3_ENDPOINT_URL}
