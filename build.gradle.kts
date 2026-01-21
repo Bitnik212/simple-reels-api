@@ -28,7 +28,9 @@ dependencies {
     implementation(libs.ktor.server.call.id)
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
+
     implementation(libs.exposed.core)
+    implementation(libs.exposed.dao)
     implementation(libs.exposed.json)
     implementation(libs.exposed.jdbc)
     implementation(libs.flyway.core)
@@ -45,6 +47,8 @@ dependencies {
 
     implementation(libs.ktor.server.metrics.micrometer)
     implementation(libs.micrometer.registry.prometheus)
+
+    implementation(libs.exposed.kotlin.datetime)
 
     implementation(libs.koin.ktor)
     implementation(libs.koin.logger.slf4j)

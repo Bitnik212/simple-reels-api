@@ -31,8 +31,8 @@ fun Application.module() {
         slf4jLogger()
         modules(mainModule, initModule)
     }
-    configureFlyway(config)
     configureDatabases(config)
+    configureFlyway(config)
     configureHTTP()
     configureMonitoring()
     configureRouting()
