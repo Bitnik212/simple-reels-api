@@ -58,3 +58,17 @@ class JsonbHasKey(
 
 fun Expression<*>.hasJsonbKey(key: String): Op<Boolean> = JsonbHasKey(this, key)
 
+class JsonbPathText(
+    private val jsonb: Expression<*>,
+    private val path: List<String>
+) : Expression<String?>() {
+    override fun toQueryBuilder(queryBuilder: QueryBuilder) {
+        queryBuilder.append(jsonb)
+        queryBuilder.append(" #>> ")
+        val pathArray = path.joinToString(separator = ",", prefix = "{", postfix = "}")
+        queryBuilder.append(stringLiteral(pathArray))
+    }
+}
+
+fun Expression<*>.jsonbPathText(vararg path: String): Expression<String?> = JsonbPathText(this, path.toList())
+
