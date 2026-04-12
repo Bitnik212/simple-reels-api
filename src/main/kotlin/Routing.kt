@@ -57,6 +57,20 @@ fun Application.configureRouting() {
     }
 
     routing {
+        get("/reels/metadata") {
+            val reelIds = call.request.queryParameters["reel_ids"]?.split(",")?.filter { it.isNotBlank() }
+                ?: return@get call.respondError("Missing or empty reel_ids query parameter")
+
+            val cachedReels = reelRepository.findByReelIds(reelIds)
+            val cachedMap = cachedReels.associateBy { it.reelId }
+
+            val result = reelIds.mapNotNull { id ->
+                cachedMap[id]?.metaData
+            }
+
+            call.respondJson(result)
+        }
+
         get("/reels/{reel_id}") {
             val reelId = call.parameters["reel_id"] ?: return@get call.respondError("Invalid reel_id")
             val metadata: ShortcodeMedia = saveReelIfNotExist(reelId) ?: let {
