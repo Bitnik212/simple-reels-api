@@ -6,6 +6,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import moe.bitt.plugin.configureDatabases
 import moe.bitt.plugin.flyway.configureFlyway
+import moe.bitt.plugin.sentry.configureSentry
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
@@ -33,6 +34,7 @@ fun Application.module() {
     }
     configureDatabases(config)
     configureFlyway(config)
+    configureSentry(config)
     configureHTTP()
     configureMonitoring()
     configureRouting()

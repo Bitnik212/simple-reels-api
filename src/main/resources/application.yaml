@@ -18,6 +18,9 @@ s3:
   secretKey: ${S3_SECRET_KEY}
 
 proxyline:
-  api-key: ${PROXYLINE_API_KEY:}
+  api-key: ${PROXYLINE_API_KEY}
   hostname: ${PROXYLINE_API_HOSTNAME:panel.proxyline.net}
   tag: ${PROXYLINE_TAG:-myreels}
+
+sentry:
+  dsn: ${SENTRY_DSN}
