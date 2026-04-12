@@ -24,3 +24,4 @@ proxyline:
 
 sentry:
   dsn: ${SENTRY_DSN}
+  auth_token: ${SENTRY_AUTH_TOKEN}
