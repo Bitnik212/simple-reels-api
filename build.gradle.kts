@@ -34,7 +34,6 @@ dependencies {
     implementation(libs.exposed.json)
     implementation(libs.exposed.jdbc)
     implementation(libs.flyway.core)
-    implementation(libs.flyway.database.postgresql)
     implementation(libs.postgresql)
     implementation(libs.hikaricp)
 
