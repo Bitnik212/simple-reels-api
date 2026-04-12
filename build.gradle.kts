@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version "2.2.21"
     alias(libs.plugins.ktor)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.sentry)
 }
 
 group = "moe.bitt.reels.api"
@@ -34,7 +35,6 @@ dependencies {
     implementation(libs.exposed.json)
     implementation(libs.exposed.jdbc)
     implementation(libs.flyway.core)
-    implementation(libs.flyway.database.postgresql)
     implementation(libs.postgresql)
     implementation(libs.hikaricp)
 
@@ -75,4 +75,15 @@ kotlin {
 
 tasks.withType<JavaCompile> {
     options.release.set(17)
+}
+
+sentry {
+    // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
+    // This enables source context, allowing you to see your source
+    // code as part of your stack traces in Sentry.
+    includeSourceContext = true
+
+    org = "sentry"
+    projectName = "reels-api"
+    authToken = System.getenv("SENTRY_AUTH_TOKEN")
 }

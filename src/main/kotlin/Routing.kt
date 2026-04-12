@@ -5,6 +5,10 @@ import io.ktor.server.application.*
 import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.*
+import io.sentry.Sentry
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import moe.bitt.reels.api.repository.ReelRepository
 import moe.bitt.reels.api.service.ReelService
@@ -47,9 +51,15 @@ fun Application.configureRouting() {
 
     suspend fun saveReelIfNotExist(reelId: String): ShortcodeMedia? {
         return if (reelRepository.findByReelId(reelId) == null) {
-            val data = service.info(reelId = reelId)
-            data.shortCodeMedia?.also { shortCodeMedia ->
-                reelRepository.insert(reelId = reelId, metadata = shortCodeMedia)
+            try {
+                val data = service.info(reelId = reelId)
+                data.shortCodeMedia?.also { shortCodeMedia ->
+                    reelRepository.insert(reelId = reelId, metadata = shortCodeMedia)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Sentry.captureException(e)
+                null
             }
         } else {
             reelRepository.findByReelId(reelId)?.metaData
@@ -64,8 +74,28 @@ fun Application.configureRouting() {
             val cachedReels = reelRepository.findByReelIds(reelIds)
             val cachedMap = cachedReels.associateBy { it.reelId }
 
+            val missingIds = reelIds.filter { it !in cachedMap }
+
+            val fetchedMetadata = if (missingIds.isNotEmpty()) {
+                coroutineScope {
+                    missingIds.map { id ->
+                        async {
+                            try {
+                                saveReelIfNotExist(id)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                Sentry.captureException(e)
+                                null
+                            }
+                        }
+                    }.awaitAll()
+                }.filterNotNull()
+            } else {
+                emptyList()
+            }
+
             val result = reelIds.mapNotNull { id ->
-                cachedMap[id]?.metaData
+                cachedMap[id]?.metaData ?: fetchedMetadata.find { it.shortcode == id }
             }
 
             call.respondJson(result)

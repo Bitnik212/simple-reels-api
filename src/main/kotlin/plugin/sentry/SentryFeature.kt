@@ -25,7 +25,7 @@ class SentryFeature(config: SentryConfig) {
                 options.tracesSampleRate = 1.0
                 // When first trying Sentry it's good to see what the SDK is doing:
                 options.isDebug = configuration.isDevelopment
-                options.addInAppInclude("md.automenu.api")
+                options.addInAppInclude("moe.bitt")
                 options.environment = if (configuration.isDevelopment) "development" else "production"
             }
 
