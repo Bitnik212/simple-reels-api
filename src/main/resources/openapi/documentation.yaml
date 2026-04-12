@@ -30,6 +30,38 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /reels/metadata/search:
+    get:
+      summary: "Search Reels"
+      description: "Search in reels metadata caption and filter by shortcodes."
+      parameters:
+        - name: "text"
+          in: "query"
+          required: false
+          description: "Text to search in caption."
+          schema:
+            type: "string"
+        - name: "shortcodes"
+          in: "query"
+          required: false
+          description: "Comma-separated list of shortcodes to filter."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/ShortCodeMedia"
+        "400":
+          description: "Missing search parameters"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /reels/{reel_id}:
     get:
       summary: "Get Reel Info"

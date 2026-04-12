@@ -100,6 +100,18 @@ fun Application.configureRouting() {
 
             call.respondJson(result)
         }
+    
+        get("/reels/metadata/search") {
+            val text = call.request.queryParameters["text"] ?: ""
+            val shortcodes = call.request.queryParameters["shortcodes"]?.split(",")?.filter { it.isNotBlank() }
+            
+            if (text.isBlank() && shortcodes.isNullOrEmpty()) {
+                return@get call.respondError("Provide either 'text' or 'shortcodes' query parameter")
+            }
+
+            val result = reelRepository.search(text = text, shortcodes = shortcodes)
+            call.respondJson(result.map { it.metaData })
+        }
 
         get("/reels/{reel_id}") {
             val reelId = call.parameters["reel_id"] ?: return@get call.respondError("Invalid reel_id")

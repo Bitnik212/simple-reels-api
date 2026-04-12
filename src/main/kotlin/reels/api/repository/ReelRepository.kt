@@ -4,7 +4,7 @@ import io.bitnik212.instagram.reels.api.ShortcodeMedia
 import kotlinx.datetime.toKotlinLocalDateTime
 import moe.bitt.reels.api.db.entity.ReelEntity
 import moe.bitt.reels.api.db.table.ReelsTable
-import org.jetbrains.exposed.sql.insertIgnore
+import org.jetbrains.exposed.sql.*
 import java.time.LocalDateTime
 
 
@@ -30,6 +30,21 @@ class ReelRepository: CommonRepository<ReelEntity>(ReelEntity) {
 
     suspend fun findByReelIds(reelIds: List<String>) = suspendTransaction {
         ReelEntity.find { ReelsTable.reel_id inList reelIds }.toList()
+    }
+
+    suspend fun search(text: String, shortcodes: List<String>? = null) = suspendTransaction {
+        val query = ReelsTable.selectAll()
+
+        if (!shortcodes.isNullOrEmpty()) {
+            query.andWhere { ReelsTable.reel_id inList shortcodes }
+        }
+
+        if (text.isNotBlank()) {
+            val captionPath = ReelsTable.metadata.jsonbPathText("edge_media_to_caption", "edges", "0", "node", "text")
+            query.andWhere { captionPath.lowerCase() like "%${text.lowercase()}%" }
+        }
+
+        ReelEntity.wrapRows(query).toList()
     }
 
 }
