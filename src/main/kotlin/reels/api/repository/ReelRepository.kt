@@ -28,4 +28,8 @@ class ReelRepository: CommonRepository<ReelEntity>(ReelEntity) {
         ReelEntity.find { ReelsTable.reel_id eq reelId }.firstOrNull()
     }
 
+    suspend fun findByReelIds(reelIds: List<String>) = suspendTransaction {
+        ReelEntity.find { ReelsTable.reel_id inList reelIds }.toList()
+    }
+
 }
