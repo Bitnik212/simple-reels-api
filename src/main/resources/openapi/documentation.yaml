@@ -4,6 +4,32 @@ info:
   description: "API for fetching Instagram Reels information and downloading them."
   version: "1.0.0"
 paths:
+  /reels/metadata:
+    get:
+      summary: "Get Reels Metadata"
+      description: "Returns metadata for multiple Instagram Reels by their IDs."
+      parameters:
+        - name: "reel_ids"
+          in: "query"
+          required: true
+          description: "Comma-separated list of reel IDs."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/ShortCodeMedia"
+        "400":
+          description: "Missing or empty reel_ids query parameter"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /reels/{reel_id}:
     get:
       summary: "Get Reel Info"
