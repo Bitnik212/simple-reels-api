@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     kotlin("jvm") version "2.2.21"
     alias(libs.plugins.ktor)
@@ -86,4 +88,17 @@ sentry {
     org = "sentry"
     projectName = "reels-api"
     authToken = System.getenv("SENTRY_AUTH_TOKEN")
+}
+
+
+tasks.processResources {
+    inputs.property("version", project.version.toString())
+
+    filesMatching("openapi/documentation.yaml") {
+        filter<ReplaceTokens>(
+            "tokens" to mapOf(
+                "version" to project.version.toString()
+            )
+        )
+    }
 }
