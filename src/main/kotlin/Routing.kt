@@ -52,8 +52,7 @@ fun Application.configureRouting() {
     suspend fun saveReelIfNotExist(reelId: String): ShortcodeMedia? {
         return if (reelRepository.findByReelId(reelId) == null) {
             try {
-                val data = service.info(reelId = reelId)
-                data.shortCodeMedia?.also { shortCodeMedia ->
+                service.info(reelId = reelId)?.also { shortCodeMedia ->
                     reelRepository.insert(reelId = reelId, metadata = shortCodeMedia)
                 }
             } catch (e: Exception) {

@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     kotlin("jvm") version "2.2.21"
     alias(libs.plugins.ktor)
@@ -6,7 +8,7 @@ plugins {
 }
 
 group = "moe.bitt.reels.api"
-version = "0.1.1"
+version = "0.1.2"
 
 application {
     mainClass = "moe.bitt.ApplicationKt"
@@ -53,7 +55,7 @@ dependencies {
     implementation(libs.koin.logger.slf4j)
     implementation(libs.logback.classic)
     implementation(libs.ktor.server.config.yaml)
-    implementation("io.bitnik212:reels-downloader:0.1.0")
+    implementation("io.bitnik212:reels-downloader:0.1.1")
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.content.negotiation)
@@ -86,4 +88,17 @@ sentry {
     org = "sentry"
     projectName = "reels-api"
     authToken = System.getenv("SENTRY_AUTH_TOKEN")
+}
+
+
+tasks.processResources {
+    inputs.property("version", project.version.toString())
+
+    filesMatching("openapi/documentation.yaml") {
+        filter<ReplaceTokens>(
+            "tokens" to mapOf(
+                "version" to project.version.toString()
+            )
+        )
+    }
 }
