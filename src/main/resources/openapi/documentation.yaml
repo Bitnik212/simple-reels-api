@@ -2,7 +2,7 @@ openapi: "3.0.3"
 info:
   title: "Simple Reels API"
   description: "API for fetching Instagram Reels information and downloading them."
-  version: "1.0.0"
+  version: @version@
 paths:
   /reels/metadata:
     get:
