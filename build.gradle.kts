@@ -53,7 +53,7 @@ dependencies {
     implementation(libs.koin.logger.slf4j)
     implementation(libs.logback.classic)
     implementation(libs.ktor.server.config.yaml)
-    implementation("io.bitnik212:reels-downloader:0.1.0")
+    implementation("io.bitnik212:reels-downloader:0.1.1")
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.content.negotiation)

@@ -1,14 +1,16 @@
 package moe.bitt.reels.api.service
 
-import io.bitnik212.instagram.reels.api.MediaData
 import io.bitnik212.instagram.reels.api.MediaInfoClient
+import io.bitnik212.instagram.reels.api.ShortcodeMedia
 import io.bitnik212.instagram.reels.api.utils.InstagramApiParamsService
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
@@ -49,33 +51,23 @@ class ReelService(
             }
 
             engine {
-                this.proxy = proxy
+                if (proxy != null) {
+                    this.proxy = proxy
 
-                config {
-                    proxyAuthenticator(object : Authenticator {
-                        override fun authenticate(route: okhttp3.Route?, response: Response): Request? {
-                            if (login == null || password == null) return response.request.newBuilder().build()
-                            val credential = Credentials.basic(login, password)
+                    config {
+                        proxyAuthenticator(object : Authenticator {
+                            override fun authenticate(route: okhttp3.Route?, response: Response): Request? {
+                                if (login == null || password == null) return response.request.newBuilder().build()
+                                val credential = Credentials.basic(login, password)
 
-                            // Avoid infinite auth loops
-                            if (response.request.header("Proxy-Authorization") != null) return null
+                                // Avoid infinite auth loops
+                                if (response.request.header("Proxy-Authorization") != null) return null
 
-                            return response.request.newBuilder()
-                                .header("Proxy-Authorization", credential)
-                                .build()
-                        }
-                    })
-
-                    addInterceptor { chain ->
-                        val req = chain.request().newBuilder()
-                        when (chain.request().url.host) {
-                            "www.instagram.com" -> {
-                                MediaInfoClient.DEFAULT_HEADERS.map { (headerName, headerValue) ->
-                                    req.addHeader(headerName, headerValue)
-                                }
+                                return response.request.newBuilder()
+                                    .header("Proxy-Authorization", credential)
+                                    .build()
                             }
-                        }
-                        chain.proceed(req.build())
+                        })
                     }
                 }
             }
@@ -85,6 +77,12 @@ class ReelService(
                 url {
                     host = "www.instagram.com"
                     protocol = URLProtocol.HTTPS
+                }
+                MediaInfoClient.DEFAULT_HEADERS.map { (headerName, headerValue) ->
+                    when(headerName) {
+                        "host" -> null
+                        else -> header(headerName, headerValue)
+                    }
                 }
             }
         }
@@ -114,24 +112,23 @@ class ReelService(
         return list[i % list.size]
     }
 
-    suspend fun info(reelId: String): MediaData {
+    suspend fun info(reelId: String): ShortcodeMedia? {
         val client = nextClient()
         val instagramAPI = MediaInfoClient(
             client = client,
             apiParams = InstagramApiParamsService(client)
         )
-        val reelInfo = instagramAPI.info(reelId)
-        return reelInfo.data
+        return instagramAPI.info(reelId)
     }
 
     suspend fun download(reelId: String): String? {
         val client = nextClient()
-        return info(reelId).shortCodeMedia?.let { shortCodeMedia ->
-            val response = client.get(shortCodeMedia.videoUrl)
+        return info(reelId)?.videoVersions?.firstOrNull()?.url?.let { videoUrl ->
+            val response = client.get(videoUrl)
             val contentType = response.headers["Content-Type"] ?: ""
             if (contentType.startsWith("text/html")) return@let null
             when(response.status) {
-                HttpStatusCode.Companion.OK -> {
+                HttpStatusCode.OK -> {
                     val contentLength = response.headers["Content-Length"]
                     val output = response.bodyAsChannel()
 
@@ -143,6 +140,7 @@ class ReelService(
                     )
                 }
                 else -> {
+                    // TODO handle error
                     null
                 }
             }
